@@ -35,6 +35,7 @@ const FlappyBird = () => {
   const pipeHeight = 640
   const birdCenterX = useDerivedValue(() => birdX + 32)
   const birdCenterY = useDerivedValue(() => birdY.value + 24)
+  const speedAnimation = useSharedValue(1)
   // let gameOver = useSharedValue(false)
   let score = useSharedValue('0')
   const paused = useSharedValue(false);
@@ -50,16 +51,18 @@ const FlappyBird = () => {
     pipeOffset = Math.floor(Math.random() * 401) - 200
     pipeYTop.value = pipeOffset -320 
     pipeYBottom.value = height - 320 + pipeOffset
+    movePipe()
   }
 
   const movePipe = () => {
-    pipeX.value = withPause( withRepeat(
+    pipeX.value = withPause( 
       withSequence(
-        withTiming(-150, { easing: Easing.linear, duration: 3000, }, () => {
+        withTiming(width, { easing: Easing.linear, duration: 0 }),
+        withTiming(-150, { easing: Easing.linear, duration: 3000 / speedAnimation.value }, () => {
           runOnJS(changePipeHeight)()
         }),
         withTiming(width, { easing: Easing.linear, duration: 0, })
-      ), -1, true), paused)
+      ), paused)
   }
 
   const birdFall = (dt) => {
@@ -101,6 +104,9 @@ const FlappyBird = () => {
       const middle = width / 3 - 90
       if(currentValue !== previousValue && previousValue && currentValue < middle && previousValue > middle) {
         score.value =  (Number(score.value) + 1).toString()
+        if(Number(score.value)) {
+          speedAnimation.value = interpolate(Number(score.value), [0, 20], [1, 2])
+        }
       }
     }
   )
