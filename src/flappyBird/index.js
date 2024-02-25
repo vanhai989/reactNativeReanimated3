@@ -68,14 +68,6 @@ const FlappyBird = () => {
     birdVelocity.value = birdVelocity.value + (GRAVITY * dt) / 1000
   }
 
-  const countScore = () => {
-    if (Math.floor(birdX + 1) == Math.floor(pipeX.value + pipeWidth)) {
-      score.value = (Number(score.value) + 1).toString()
-    } else {
-
-    }
-  }
-
   const checkGameOver = (currentBirdY, previousBirdY) => {
     //top base and bottom base
     if (currentBirdY >= height - 150 || currentBirdY <= 0) {  
@@ -103,15 +95,15 @@ const FlappyBird = () => {
     }
   }
 
-  // useAnimatedReaction(
-  //   () => pipeX.value,
-  //   (currentValue, previousValue) => {
-  //     const middle = width /2
-  //     if(currentValue !== previousValue && previousValue && currentValue < middle && previousValue < middle) {
-  //       console.log(currentValue)
-  //     }
-  //   }
-  // )
+  useAnimatedReaction(
+    () => pipeX.value,
+    (currentValue, previousValue) => {
+      const middle = width / 3 - 90
+      if(currentValue !== previousValue && previousValue && currentValue < middle && previousValue > middle) {
+        score.value =  (Number(score.value) + 1).toString()
+      }
+    }
+  )
 
   useAnimatedReaction(
     () => birdY.value,
@@ -121,8 +113,6 @@ const FlappyBird = () => {
     )
 
   useFrameCallback(({ timeSincePreviousFrame: dt }) => {
-    runOnJS(countScore)()
-    // runOnJS(checkGameOver)()
     runOnJS(birdFall)(dt)
   })
 
